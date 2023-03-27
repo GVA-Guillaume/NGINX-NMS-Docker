@@ -1,0 +1,52 @@
+services: 
+  Secret:
+    image: vault
+    container_name: vault
+    ports:
+      - 9311:8200
+    volumes:
+      - ./vault:/vault  
+    #volumes:
+    #  - ./letencrypt:/etc/letsencrypt
+    #  - ./var_encrypt:/var/lib/letsencrypt
+  Storage:
+    image: clickhouse
+    container_name: clickhouse
+    ports:
+      - 9234:8123
+      - 10111:9000
+    #volumes:
+     # - ./clickhouse-server:/etc/clickhouse-server
+     # - ./clickhouse-client:/etc/clickhouse-client
+  Instance:
+   # image: nginxp-deb11
+   #image: nginxp-globalch
+    image: nism
+    container_name: nims
+    restart: always
+    ports:
+      - 80:80
+      - 8080:8080
+      - 443:443
+    volumes:
+      - ./nginx:/etc/nginx
+      - ./nms:/etc/nms
+      - ./letsencrypt:/etc/letsencrypt
+      - ./nms-nap-compiler:/etc/nms-nap-compiler
+      - ./log:/var/log
+#  ACME:>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Actually working on SSL automation, the solution from Official Support seems a Certonly option without --nginx flag. (i have to test it)
+#    image: certbot:dev
+#    container_name: certbot
+    #entrypoint: '/bin/sh'
+#    depends_on: 
+#      - Instance
+#   links: 
+#     - Instance
+#    command: 'certbot --nginx  --noninteractive -d flow.kapdome.com -d flow1.kapdome.com -d flow2.kapdome.com -d flow3.kapdome.com -d flow4.kapdome.com -d cast.kapdome.com  --agree-tos -m ka.dome@gmail.com'
+  Dashboard:
+    image: grafana
+    container_name: grafana
+    ports:
+      - 4111:3000
+
+       #security -v unlock-keychain ~/Library/Keychains/login.keychain-db
